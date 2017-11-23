@@ -19,7 +19,7 @@ echo Sorting the merged list and removing any dupes...
 sort -u /tmp/merged-list.txt >/tmp/sorted-list.txt
 
 get_list_script() {
-	cat "create temp-ipset nethash --hashsize 1024 --probes 4 --resize 20"
+	echo "create temp-ipset nethash --hashsize 1024 --probes 4 --resize 20"
 	cat /tmp/sorted-list.txt | sed -e "s/^/add temp-ipset [/g" -e "s/$/]/g"
 }
 
