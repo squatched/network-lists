@@ -1,0 +1,45 @@
+# Allow the WAN interface to input.
+iptables --insert INPUT 5 --in-interface `nvram get wan_ifname` --jump ACCEPT
+
+# Create a whitelist for traffic leaving this network and jump here if lan traffic
+# is trying to get there through the router.
+iptables --new-chain wanout
+iptables --append FORWARD --in-interface `nvram get lan_ifname` --jump wanout
+iptables --append FORWARD --in-interface `nvram get lan_ifname` --jump logreject
+
+########## INSERT WHITELISTED DOMAINS HERE ##########
+# My best guess at google's IP ranges. Determined via:
+# nslookup -q=TXT _netblocks.google.com 8.8.8.8 | grep -Po "(?<=ip4:)(?:[[:digit:]]{1,3}\.){3}[[:digit:]]{1,3}(?:/[[:digit:]]{1,2})?" | sed -E "s/^(.*)$/iptables --append wanout --destination \1 --jump ACCEPT/g"
+# nslookup -q=TXT _netblocks3.google.com 8.8.8.8  | grep -Po "(?<=ip4:)(?:[[:digit:]]{1,3}\.){3}[[:digit:]]{1,3}(?:/[[:digit:]]{1,2})?" | sed -E "s/^(.*)$/iptables --append wanout --destination \1 --jump ACCEPT/g"
+iptables --append wanout --destination 64.18.0.0/20 --jump ACCEPT
+iptables --append wanout --destination 64.233.160.0/19 --jump ACCEPT
+iptables --append wanout --destination 66.102.0.0/20 --jump ACCEPT
+iptables --append wanout --destination 66.249.80.0/20 --jump ACCEPT
+iptables --append wanout --destination 72.14.192.0/18 --jump ACCEPT
+iptables --append wanout --destination 74.125.0.0/16 --jump ACCEPT
+iptables --append wanout --destination 108.177.8.0/21 --jump ACCEPT
+iptables --append wanout --destination 173.194.0.0/16 --jump ACCEPT
+iptables --append wanout --destination 207.126.144.0/20 --jump ACCEPT
+iptables --append wanout --destination 209.85.128.0/17 --jump ACCEPT
+iptables --append wanout --destination 216.58.192.0/19 --jump ACCEPT
+iptables --append wanout --destination 216.239.32.0/19 --jump ACCEPT
+iptables --append wanout --destination 172.217.0.0/19 --jump ACCEPT
+iptables --append wanout --destination 108.177.96.0/19 --jump ACCEPT
+
+# My best guess at whitelisting windows update servers.
+# This might require something like...
+# nslookup domain 8.8.8.8 | 
+iptables --append wanout --destination windowsupdate.microsoft.com --jump ACCEPT
+iptables --append wanout --destination download.windowsupdate.com --jump ACCEPT
+iptables --append wanout --destination update.microsoft.com --jump ACCEPT
+iptables --append wanout --destination download.microsoft.com --jump ACCEPT
+iptables --append wanout --destination ntservicepack.microsoft.com --jump ACCEPT
+iptables --append wanout --destination wustat.windows.com --jump ACCEPT
+iptables --append wanout --destination v4.windowsupdate.microsoft.com --jump ACCEPT
+iptables --append wanout --destination v5.windowsupdate.microsoft.com --jump ACCEPT
+
+# Whitelist a domain, like www.steampowered.com
+iptables --append wanout --destination www.steampowered.com --jump ACCEPT
+iptables --append wanout --destination store.akamai.steamstatic.com --jump ACCEPT
+iptables --append wanout --destination cdn.akamai.steamstatic.com --jump ACCEPT
+########## END DOMAIN WHITELIST ##########

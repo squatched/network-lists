@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 IFS=$'\n\t'
+IP_OR_CIDR_REGEX="(?:[[:digit:]]{1,3}\.){3}[[:digit:]]{1,3}(?:\/[[:digit:]]{1,3})?"
 
 target_ipset="$1"
 shift
@@ -20,7 +21,8 @@ sort -u /tmp/merged-list.txt >/tmp/sorted-list.txt
 
 get_list_script() {
 	echo "create temp-ipset nethash --hashsize 1024 --probes 4 --resize 20"
-	cat /tmp/sorted-list.txt | sed -e "s/^/add temp-ipset [/g" -e "s/$/]/g"
+	cat /tmp/sorted-list.txt | grep -Pv ${IP_OR_CIDR_REGEX} | sed -e "s/^/add temp-ipset [/g" -e "s/$/]/g"
+	cat /tmp/sorted-list.txt | grep -P ${IP_OR_CIDR_REGEX} | sed -e "s/^/add temp-ipset /g"
 }
 
 # Create the ip set
