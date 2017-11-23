@@ -5,7 +5,7 @@ IFS=$'\n\t'
 target_ipset="$1"
 shift
 
-echo Getting whitelist(s)...
+echo "Getting whitelist(s)..."
 echo "" >/tmp/merged-list.txt
 
 while [[ ${#} -gt 0 ]]; do
