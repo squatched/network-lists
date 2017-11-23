@@ -20,7 +20,7 @@ sort -u /tmp/merged-list.txt >/tmp/sorted-list.txt
 
 get_list_script() {
 	cat "create temp-ipset nethash --hashsize 1024 --probes 4 --resize 20"
-	cat /tmp/sorted-list.txt | sed -e "s/^/add temp-ipset/g"
+	cat /tmp/sorted-list.txt | sed -e "s/^/add temp-ipset [/g" -e "s/$/]/g"
 }
 
 # Create the ip set
