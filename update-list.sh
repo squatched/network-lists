@@ -9,7 +9,7 @@ echo Getting whitelist(s)...
 echo "" >/tmp/merged-list.txt
 
 while [[ ${#} -gt 0 ]]; do
-	curl -o "/tmp/${1}" "https://raw.githubusercontent.com/squatched/network-lists/master/${1}"
+	curl -o "/tmp/${1}" "https://raw.githubusercontent.com/squatched/network-lists/master/lists/${1}"
 	cat "/tmp/${1}" >>/tmp/merged-list.txt
 	rm "/tmp/${1}"
 	shift
